@@ -1,13 +1,30 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import { FaRocketchat } from 'react-icons/fa';
 import { data } from '@/data/repoData';
 
-export default function RepoContainer() {
+const RepoContainer: React.FC<{ filterLanguage: string }> = ({
+    filterLanguage,
+}) => {
+    const [showIssues, setShowIssues] = useState<boolean[]>(
+        new Array(data.length).fill(false)
+    );
+
+    const handleToggleIssues = (index: number) => {
+        const newShowIssues = [...showIssues];
+        newShowIssues[index] = !newShowIssues[index];
+        setShowIssues(newShowIssues);
+    };
+
+    const filteredData = filterLanguage
+        ? data.filter((repo) => repo.language === filterLanguage)
+        : data;
+
     return (
         <div>
-            {data.map((repo, index) => (
+            {filteredData.map((repo, index) => (
                 <div
-                    className='select-none border w-full rounded-md mb-4 cursor-pointer hover:bg-ink-300 group'
+                    className='select-none border border-black w-full rounded-md mb-4 cursor-pointer hover:bg-ink-300 group shadow-lg bg-opacity-70 w-full'
                     key={index}
                 >
                     <div className='px-5 py-3'>
@@ -16,7 +33,9 @@ export default function RepoContainer() {
                                 {repo.owner} / {repo.name}
                             </a>
                             <span className='flex-1'></span>
-                            <span>{repo.issues.length}</span>
+                            <span onClick={() => handleToggleIssues(index)}>
+                                {repo.issues.length} issues
+                            </span>
                         </div>
 
                         <div className='flex-row flex text-sm py-1 overflow-auto'>
@@ -42,28 +61,42 @@ export default function RepoContainer() {
                         </div>
                     </div>
 
-                    {/* <ol className="px-5 py-3 text-base leading-loose border-t border-ink-200">
-                        <li className="flex flex-row items-start justify-start py-1">
-                            <span className="text-slate text-right px-2 leading-snug font-mono" style="min-width: 70px">#{{ issue.number }}</span>
-                            <div className="flex items-start flex-row flex-auto">
-                            <a
-                                title="Open issue on GitHub"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="leading-snug font-medium hover:text-juniper text-vanilla-300 block flex-auto"
-                                >{{ issue.title }}</a>
-                            <div
-                                v-if="issue.comments_count > 0"
-                                className="flex flex-row items-center justify-end mt-1 w-10"
-                            >
-                                <FaRocketchat className="mt-px w-3.5 h-3.5" />
-                                <span className="ml-1 text-sm leading-snug font-mono">{{ issue.comments_count }}</span>
-                            </div>
-                            </div>
-                        </li>
-                    </ol> */}
+                    {showIssues[index] && (
+                        <ol className='px-5 py-3 text-base leading-loose border-t border-ink-200'>
+                            {repo.issues.map((issue, i) => (
+                                <li
+                                    key={i}
+                                    className='flex flex-row items-start justify-start py-1'
+                                >
+                                    <span className='text-slate text-right px-2 leading-snug font-mono'>
+                                        #{issue.number}
+                                    </span>
+                                    <div className='flex items-start flex-row flex-auto'>
+                                        <a
+                                            title='Open issue on GitHub'
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                            className='leading-snug font-medium hover:text-juniper text-vanilla-300 block flex-auto'
+                                        >
+                                            {issue.title}
+                                        </a>
+                                        {issue.comments_count > 0 && (
+                                            <div className='flex flex-row items-center justify-end mt-1 w-10'>
+                                                <FaRocketchat className='mt-px w-3.5 h-3.5' />
+                                                <span className='ml-1 text-sm leading-snug font-mono'>
+                                                    {issue.comments_count}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
                 </div>
             ))}
         </div>
     );
-}
+};
+
+export default RepoContainer;
