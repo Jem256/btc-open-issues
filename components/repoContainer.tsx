@@ -1,24 +1,39 @@
 'use client';
 import React, { useState } from 'react';
 import { FaRocketchat } from 'react-icons/fa';
-import { data } from '@/data/repoData';
 
-const RepoContainer: React.FC<{ filterLanguage: string }> = ({
+interface Project {
+    full_name: string;
+    description: string;
+    language: string;
+    stargazers_count: number;
+    // Add other fields as necessary
+}
+
+interface RepoContainerProps {
+    filterLanguage: string;
+    projects: Project[];
+}
+
+const RepoContainer: React.FC<RepoContainerProps> = ({
     filterLanguage,
+    projects,
 }) => {
-    const [showIssues, setShowIssues] = useState<boolean[]>(
-        new Array(data.length).fill(false)
-    );
+    // const [showIssues, setShowIssues] = useState<boolean[]>(
+    //     new Array(projects.length).fill(false)
+    // );
 
-    const handleToggleIssues = (index: number) => {
-        const newShowIssues = [...showIssues];
-        newShowIssues[index] = !newShowIssues[index];
-        setShowIssues(newShowIssues);
-    };
+    // const handleToggleIssues = (index: number) => {
+    //     const newShowIssues = [...showIssues];
+    //     newShowIssues[index] = !newShowIssues[index];
+    //     setShowIssues(newShowIssues);
+    // };
 
     const filteredData = filterLanguage
-        ? data.filter((repo) => repo.language === filterLanguage)
-        : data;
+        ? projects.filter(
+              (repo: { language: string }) => repo.language === filterLanguage
+          )
+        : projects;
 
     return (
         <div>
@@ -29,13 +44,11 @@ const RepoContainer: React.FC<{ filterLanguage: string }> = ({
                 >
                     <div className='px-5 py-3'>
                         <div className='flex flex-row'>
-                            <a>
-                                {repo.owner} / {repo.name}
-                            </a>
+                            <a>{repo.full_name}</a>
                             <span className='flex-1'></span>
-                            <span onClick={() => handleToggleIssues(index)}>
+                            {/* <span onClick={() => handleToggleIssues(index)}>
                                 {repo.issues.length} issues
-                            </span>
+                            </span> */}
                         </div>
 
                         <div className='flex-row flex text-sm py-1 overflow-auto'>
@@ -50,18 +63,18 @@ const RepoContainer: React.FC<{ filterLanguage: string }> = ({
                                 <span className='text-vanilla-400'>
                                     stars:{' '}
                                 </span>
-                                {repo.stars_display}
+                                {repo.stargazers_count}
                             </div>
                             <div className='mr-4'>
                                 <span className='text-vanilla-400'>
                                     last activity:{' '}
                                 </span>
-                                <span>{repo.last_modified}</span>
+                                {/* <span>{repo.last_modified}</span> */}
                             </div>
                         </div>
                     </div>
 
-                    {showIssues[index] && (
+                    {/* {showIssues[index] && (
                         <ol className='px-5 py-3 text-base leading-loose border-t border-ink-200'>
                             {repo.issues.map((issue, i) => (
                                 <li
@@ -92,7 +105,7 @@ const RepoContainer: React.FC<{ filterLanguage: string }> = ({
                                 </li>
                             ))}
                         </ol>
-                    )}
+                    )} */}
                 </div>
             ))}
         </div>
